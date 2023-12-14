@@ -1,86 +1,108 @@
+// Queue implementation in C++
+
 #include <iostream>
+#define SIZE 5
 
-template <typename T>
+using namespace std;
+
 class Queue {
-private:
-    struct Node {
-        T data;
-        Node* next;
+   private:
+  int items[SIZE], front, rear;
 
-        Node(const T& value) : data(value), next(nullptr) {}
-    };
+   public:
+  Queue() {
+    front = -1;
+    rear = -1;
+  }
 
-    Node* front;
-    Node* rear;
-
-public:
-    Queue() : front(nullptr), rear(nullptr) {}
-
-    ~Queue() {
-        while (!isEmpty()) {
-            dequeue();
-        }
+  bool isFull() {
+    if (front == 0 && rear == SIZE - 1) {
+      return true;
     }
+    return false;
+  }
 
-    bool isEmpty() const {
-        return front == nullptr;
+  bool isEmpty() {
+    if (front == -1)
+      return true;
+    else
+      return false;
+  }
+
+  void enQueue(int element) {
+    if (isFull()) {
+      cout << "Queue is full";
+    } else {
+      if (front == -1) front = 0;
+      rear++;
+      items[rear] = element;
+      cout << endl
+         << "Inserted " << element << endl;
     }
+  }
 
-    void enqueue(const T& value) {
-        Node* newNode = new Node(value);
-        if (isEmpty()) {
-            front = rear = newNode;
-        } else {
-            rear->next = newNode;
-            rear = newNode;
-        }
+  int deQueue() {
+    int element;
+    if (isEmpty()) {
+      cout << "Queue is empty" << endl;
+      return (-1);
+    } else {
+      element = items[front];
+      if (front >= rear) {
+        front = -1;
+        rear = -1;
+      } /* Q has only one element, so we reset the queue after deleting it. */
+      else {
+        front++;
+      }
+      cout << endl
+         << "Deleted -> " << element << endl;
+      return (element);
     }
+  }
 
-    void dequeue() {
-        if (isEmpty()) {
-            std::cerr << "Queue is empty. Cannot dequeue.\n";
-            return;
-        }
-
-        Node* temp = front;
-        front = front->next;
-        delete temp;
-
-        if (front == nullptr) {
-            rear = nullptr; // If dequeued the last element, update rear
-        }
+  void display() {
+    /* Function to display elements of Queue */
+    int i;
+    if (isEmpty()) {
+      cout << endl
+         << "Empty Queue" << endl;
+    } else {
+      cout << endl
+         << "Front index-> " << front;
+      cout << endl
+         << "Items -> ";
+      for (i = front; i <= rear; i++)
+        cout << items[i] << "  ";
+      cout << endl
+         << "Rear index-> " << rear << endl;
     }
-
-    T getFront() const {
-        if (isEmpty()) {
-            std::cerr << "Queue is empty. No front element.\n";
-            throw std::out_of_range("Queue is empty.");
-        }
-        return front->data;
-    }
-
-    T getRear() const {
-        if (isEmpty()) {
-            std::cerr << "Queue is empty. No rear element.\n";
-            throw std::out_of_range("Queue is empty.");
-        }
-        return rear->data;
-    }
+  }
 };
 
 int main() {
-    Queue<int> myQueue;
+  Queue q;
 
-    myQueue.enqueue(10);
-    myQueue.enqueue(20);
-    myQueue.enqueue(30);
+  //deQueue is not possible on empty queue
+  q.deQueue();
 
-    std::cout << "Front element: " << myQueue.getFront() << std::endl;
-    std::cout << "Rear element: " << myQueue.getRear() << std::endl;
+  //enQueue 5 elements
+  q.enQueue(1);
+  q.enQueue(2);
+  q.enQueue(3);
+  q.enQueue(4);
+  q.enQueue(5);
 
-    myQueue.dequeue();
+  // 6th element can't be added to because the queue is full
+  q.enQueue(6);
 
-    std::cout << "Front element after dequeue: " << myQueue.getFront() << std::endl;
+  q.display();
 
-    return 0;
+  //deQueue removes element entered first i.e. 1
+  q.deQueue();
+
+  //Now we have just 4 elements
+  q.display();
+
+  return 0;
 }
