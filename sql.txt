@@ -140,3 +140,29 @@ SELECT COUNT(*) FROM (
 SELECT SOCIETY.SocName, MentorName, TotalSeats, COUNT(ENROLLMENT.RollNo) AS TotalEnrolled, (TotalSeats - COUNT(ENROLLMENT.RollNo)) AS UnfilledSeats FROM SOCIETY
 LEFT JOIN ENROLLMENT ON SOCIETY.SocID = ENROLLMENT.SID
 GROUP BY SOCIETY.SocName;
+
+
+
+---
+SELECT SocName FROM SOCIETY
+JOIN (SELECT SID, COUNT(*) AS EnrolledCount FROM ENROLLMENT GROUP BY SID) AS EnrollmentCount
+ON SOCIETY.SocID = EnrollmentCount.SID
+WHERE EnrolledCount = TotalSeats * 0.1;
+--
+SELECT SOCIETY.SocName, (SOCIETY.TotalSeats - IFNULL(EnrollmentCount.EnrolledCount, 0)) AS VacantSeats
+FROM SOCIETY
+LEFT JOIN (SELECT SID, COUNT(*) AS EnrolledCount FROM ENROLLMENT GROUP BY SID) AS EnrollmentCount
+ON SOCIETY.SocID = EnrollmentCount.SID;
+
+--CREATE VIEW SocietyEnrollmentView AS
+SELECT SOCIETY.SocName, COUNT(ENROLLMENT.RollNo) AS TotalEnrolled
+FROM SOCIETY
+LEFT JOIN ENROLLMENT ON SOCIETY.SocID = ENROLLMENT.SID
+GROUP BY SOCIETY.SocName;
+--SELECT SOCIETY.SocName, SOCIETY.MentorName, SOCIETY.TotalSeats, 
+IFNULL(EnrollmentCount.EnrolledCount, 0) AS TotalEnrolled,
+(SOCIETY.TotalSeats - IFNULL(EnrollmentCount.EnrolledCount, 0)) AS UnfilledSeats
+FROM SOCIETY
+LEFT JOIN (SELECT SID, COUNT(*) AS EnrolledCount FROM ENROLLMENT GROUP BY SID) AS EnrollmentCount
+ON SOCIETY.SocID = EnrollmentCount.SID;
+
